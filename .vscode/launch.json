@@ -1,0 +1,11 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "CodeLens (Launch) - InteractivePercolationVisualizer",
+      "request": "launch",
+      "mainClass": "src.main.java.InteractivePercolationVisualizer",
+      "projectName": "percolation"
+    }
+  ]
+}
