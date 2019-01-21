@@ -1,33 +1,88 @@
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+
 /**
- * Hello world!
+ * Percolation class
  *
  */
 public class Percolation {
-    public static void main(String[] args) {
-        System.out.println("Hello World!");
+
+    private int gridSize;
+    private WeightedQuickUnionUF connectedSites;
+    private int openSitesNum = 0;
+    private boolean[][] grid;
+
+    // constructor
+    public Percolation(final int n) {
+        if (n < 0) {
+            throw new java.lang.IllegalArgumentException();
+        }
+        this.gridSize = n + 1;
+        this.connectedSites = new WeightedQuickUnionUF((n + 1) * (n + 1));
+        this.grid = new boolean[n + 1][n + 1];
+
+        for(int i = 1; i <= n; i++) {
+            for(int j = 1; j <= n; j++) {
+                grid[i][j] = false;
+            }
+        }
     }
 
-    public Percolation(int n) {
-
+    public static void main(final String[] args) {
+        Percolation p = new Percolation(4);
+        p.open(1,1);
+        p.open(1,2);
+        System.out.println(p.connectedSites.connected(0,1));
+        System.out.println(p.numberOfOpenSites());
     }
 
     // open site (row, col) if it is not open already
-    public void open(int row, int col) {
+    public void open(final int row, final int col) {
+        validateIndices(row);
+        validateIndices(col);
+
+
+        if (!this.isOpen(row, col)) {
+            grid[row][col] = true;
+            openSitesNum++;
+
+            if (row - 1 >= 0 && this.isOpen(row - 1, col)) {
+                connectedSites.union(xyTo1D(row, col), xyTo1D(row - 1, col));
+            }
+
+            if (row + 1 < gridSize && this.isOpen(row + 1, col)) {
+                connectedSites.union(xyTo1D(row, col), xyTo1D(row+1, col));
+            }
+
+            if (col + 1 < gridSize && this.isOpen(row, col + 1)) {
+                connectedSites.union(xyTo1D(row, col), xyTo1D(row, col + 1));
+            }
+
+            if (col - 1 >= 0 && this.isOpen(row, col - 1)) {
+                connectedSites.union(xyTo1D(row, col), xyTo1D(row, col - 1));
+            }
+        }
     }
 
     // is site (row, col) open?
-    public boolean isOpen(int row, int col) {
-        return false;
+    public boolean isOpen(final int row, final int col) {
+        validateIndices(row);
+        validateIndices(col);
+        return grid[row][col];
     }
 
     // is site (row, col) full?
-    public boolean isFull(int row, int col) {
+    public boolean isFull(final int row, final int col) {
+        validateIndices(row);
+        validateIndices(col);
         return false;
     }
 
-    // number of open sites
+    /**
+     * Calculates a number of open sites
+     * @return number of open sites
+     */
     public int numberOfOpenSites() {
-        return 0;
+        return openSitesNum;
     }
 
     // does the system percolate?
@@ -35,4 +90,21 @@ public class Percolation {
         return false;
     }
 
+    /**
+     * check index that should be 1
+     * @param n - number to validate
+     */
+    private void validateIndices(final int n) {
+        if (n < 0) {
+            throw new java.lang.IllegalArgumentException();
+        }
+    }
+
+    private int xyTo1D(final int row, final int col) {
+        return row + col;
+    }
+
+//    private int dec(int i) {
+//        return i - 1;
+//    }
 }
